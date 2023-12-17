@@ -11,14 +11,13 @@ app = FastAPI()
 
 db = SessionLocal() #All Queries Comes from Here
 
-@app.get('/',response_model=list[CreateEmployeeRequest], status_code = status.HTTP_200_OK)
-def get_all_employee():
-    getAllEmployee = db.query(Employee).all()
-    return getAllEmployee
-
-@app.get('/getemployeebyid/{id}', status_code=200)
-def get_employee_by_id(id: int):
-    return {"message": f"Your person ID is {id}"}
+@app.get('/getemployee/{e_id}',response_model=CreateEmployeeRequest, status_code=status.HTTP_200_OK)
+def get_employee(e_id: int):
+    getEmployee = db.query(Employee).filter(Employee.id == e_id).first()
+    if getEmployee is not None:
+        return getEmployee
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee with this id not found")    
+        
 
 
 @app.post('/addemployee', response_model= CreateEmployeeRequest, status_code = status.HTTP_201_CREATED)
@@ -96,15 +95,14 @@ def deleteEmployee(e_id:int):
 
 
 
+# @app.get('/',response_model=list[CreateEmployeeRequest], status_code = status.HTTP_200_OK)
+# def get_all_employee():
+#     getAllEmployee = db.query(Employee).all()
+#     return getAllEmployee
 
-
-
-
-
-
-
-
-
+# @app.get('/getemployeebyid/{id}', status_code=200)
+# def get_employee_by_id(id: int):
+#     return {"message": f"Your person ID is {id}"}
 
 # @app.get('/', status_code=200)
 # def get_info():
