@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 
+from auth.jwt_handler import signJWT
 from database import SessionLocal
 from models import Employee
-from schema import EmployeeRequest
+from schema import DepartmentRequest, EmployeeLogin, EmployeeRequest
 
 # from models import Employee  # Assuming you have a models.py file with the Employee model
 
@@ -20,16 +21,16 @@ def get_employee(e_id: int):
         
 
 
-@app.post('/addemployee', response_model= EmployeeRequest, status_code = status.HTTP_201_CREATED)
-def add_Employee(emp: EmployeeRequest):
+@app.post('/signup',status_code = status.HTTP_201_CREATED)
+def signup(emp: EmployeeRequest):
     newEmployee = Employee(
         id = emp.id,
         f_name = emp.f_name,
         l_name = emp.l_name,
         email = emp.email,
-        d_name = emp.d_name,
         password = emp.password,
         is_male = emp.is_male,
+        d_name = emp.d_name,
         salary = emp.salary
     )
 
@@ -41,9 +42,24 @@ def add_Employee(emp: EmployeeRequest):
     db.add(newEmployee)
     db.commit()
 
-    return newEmployee
+    return signJWT(newEmployee.email)# we can write newEmployee.email or emp.email because newEmployee has emp values
         
 # we dont write models.Employee instead we right Employee because we included models in main.py
+
+
+def check_employee(emp:EmployeeLogin):
+    checkemp = db.query(Employee).filter(Employee.email == emp.email).first()
+    return checkemp is not None
+
+@app.post('/login')
+def login(emp:EmployeeLogin):
+    
+    if(check_employee(emp)):
+        return signJWT(emp.email)
+    else:
+        return {
+            "error":"Invalid Login Details"
+        }
 
 
 
@@ -65,6 +81,8 @@ def update_person(e_id: int, emp: EmployeeRequest):
         return find_emp
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee with this id not found")
 
+
+
 @app.delete("/deleteemployee/{e_id}", response_model = EmployeeRequest, status_code=status.HTTP_200_OK)
 def deleteEmployee(e_id:int):
     find_emp = db.query(Employee).filter(Employee.id == e_id).first()
@@ -79,11 +97,5 @@ def deleteEmployee(e_id:int):
     
 
 
-
 #in def and app.operation(any:- post,get,put) we have to use same variable which we have used in jinja format
-
-
-
-
-
 
