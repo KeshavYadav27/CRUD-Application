@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status
 from pydantic import BaseModel
 
+from auth.jwt_bearer import jwtBearer
 from auth.jwt_handler import signJWT
 from database import SessionLocal
-from models import Employee
+from models import Department, Employee
 from schema import DepartmentRequest, EmployeeLogin, EmployeeRequest
 
 # from models import Employee  # Assuming you have a models.py file with the Employee model
@@ -64,7 +65,7 @@ def login(emp:EmployeeLogin):
 
 
 @app.put('/updateemployee/{e_id}', response_model=EmployeeRequest,status_code=status.HTTP_202_ACCEPTED)
-def update_person(e_id: int, emp: EmployeeRequest):
+def update_employee(e_id: int, emp: EmployeeRequest):
     find_emp = db.query(Employee).filter(Employee.id == e_id).first()
     # filter(emp.id == e_id) in place of emp.id we have to write Employee.id
     # find_emp.id = emp.id
@@ -83,7 +84,7 @@ def update_person(e_id: int, emp: EmployeeRequest):
 
 
 
-@app.delete("/deleteemployee/{e_id}", response_model = EmployeeRequest, status_code=status.HTTP_200_OK)
+@app.delete('/deleteemployee/{e_id}', response_model = EmployeeRequest, status_code=status.HTTP_200_OK)
 def deleteEmployee(e_id:int):
     find_emp = db.query(Employee).filter(Employee.id == e_id).first()
 
@@ -95,6 +96,19 @@ def deleteEmployee(e_id:int):
     
     return find_emp
     
+@app.post('/add_department', dependencies=[Depends(jwtBearer())], status_code = status.HTTP_201_CREATED)
+def add_dept(dept:DepartmentRequest):
+    newDept = Department(
+        id = dept.id,
+        name = dept.name
+    )
+    db.add(newDept)
+    db.commit()
+
+    return {
+        "info": "Department Added"
+    }
+
 
 
 #in def and app.operation(any:- post,get,put) we have to use same variable which we have used in jinja format
