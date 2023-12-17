@@ -1,7 +1,7 @@
 # schema.py
 from decimal import Decimal
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class OurBaseModel(BaseModel):
@@ -12,12 +12,17 @@ class OurBaseModel(BaseModel):
 
 # from_attributes = True indicates that Pydantic should use attribute-style access to data, making it compatible with ORMs that use attribute access.
 
-class CreateEmployeeRequest(OurBaseModel):
-    id: int
+class EmployeeRequest(OurBaseModel):
+    id: int 
     f_name: str
-    l_name: str
-    email: str
+    l_name: str 
+    email: EmailStr 
     password: str
     # super_user: bool = False
-    is_male: bool = True  # Corrected the default value syntax
+    is_male: bool = True  
+    d_name: str
     salary: Decimal
+
+class DepartmentRequest(OurBaseModel):
+    id: int
+    name: str

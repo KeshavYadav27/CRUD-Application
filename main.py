@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 from database import SessionLocal
 from models import Employee
-from schema import CreateEmployeeRequest
+from schema import EmployeeRequest
 
 # from models import Employee  # Assuming you have a models.py file with the Employee model
 
@@ -11,7 +11,7 @@ app = FastAPI()
 
 db = SessionLocal() #All Queries Comes from Here
 
-@app.get('/getemployee/{e_id}',response_model=CreateEmployeeRequest, status_code=status.HTTP_200_OK)
+@app.get('/getemployee/{e_id}',response_model=EmployeeRequest, status_code=status.HTTP_200_OK)
 def get_employee(e_id: int):
     getEmployee = db.query(Employee).filter(Employee.id == e_id).first()
     if getEmployee is not None:
@@ -20,13 +20,14 @@ def get_employee(e_id: int):
         
 
 
-@app.post('/addemployee', response_model= CreateEmployeeRequest, status_code = status.HTTP_201_CREATED)
-def add_Employee(emp: CreateEmployeeRequest):
+@app.post('/addemployee', response_model= EmployeeRequest, status_code = status.HTTP_201_CREATED)
+def add_Employee(emp: EmployeeRequest):
     newEmployee = Employee(
         id = emp.id,
         f_name = emp.f_name,
         l_name = emp.l_name,
         email = emp.email,
+        d_name = emp.d_name,
         password = emp.password,
         is_male = emp.is_male,
         salary = emp.salary
@@ -46,8 +47,8 @@ def add_Employee(emp: CreateEmployeeRequest):
 
 
 
-@app.put('/update_employee/{e_id}', response_model=CreateEmployeeRequest,status_code=status.HTTP_202_ACCEPTED)
-def update_person(e_id: int, emp: CreateEmployeeRequest):
+@app.put('/updateemployee/{e_id}', response_model=EmployeeRequest,status_code=status.HTTP_202_ACCEPTED)
+def update_person(e_id: int, emp: EmployeeRequest):
     find_emp = db.query(Employee).filter(Employee.id == e_id).first()
     # filter(emp.id == e_id) in place of emp.id we have to write Employee.id
     # find_emp.id = emp.id
@@ -57,22 +58,25 @@ def update_person(e_id: int, emp: CreateEmployeeRequest):
         find_emp.email = emp.email
         find_emp.password = emp.password
         find_emp.is_male = emp.is_male
+        find_emp.d_name = emp.d_name
         find_emp.salary = emp.salary
         db.commit()
         db.refresh(find_emp)
         return find_emp
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee with this id not found")
 
-@app.delete("/deleteemployee/{e_id}", response_model = CreateEmployeeRequest, status_code=status.HTTP_200_OK)
+@app.delete("/deleteemployee/{e_id}", response_model = EmployeeRequest, status_code=status.HTTP_200_OK)
 def deleteEmployee(e_id:int):
     find_emp = db.query(Employee).filter(Employee.id == e_id).first()
 
-    if  find_emp is not None:
-        db.delete(find_emp)
+    if find_emp is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee with this id is either deleted or not found")
 
-        db.commit()
-        return HTTPException(status_code=status.HTTP_200_OK,detail="Employee is deleted with id={e_id}")
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee with this id is either deleted or not found")
+    db.delete(find_emp)
+    db.commit()
+    
+    return find_emp
+    
 
 
 
@@ -83,38 +87,3 @@ def deleteEmployee(e_id:int):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-# @app.get('/',response_model=list[CreateEmployeeRequest], status_code = status.HTTP_200_OK)
-# def get_all_employee():
-#     getAllEmployee = db.query(Employee).all()
-#     return getAllEmployee
-
-# @app.get('/getemployeebyid/{id}', status_code=200)
-# def get_employee_by_id(id: int):
-#     return {"message": f"Your person ID is {id}"}
-
-# @app.get('/', status_code=200)
-# def get_info():
-#     return {"Message": "Server is running."}
-
-# @app.post('/addemployeeinfo', status_code=200)
-# def add_employee_info(emp: CreateEmployeeRequest):  # Fix the model type here
-#     return {
-#         "id": emp.id,
-#         "f_name": emp.f_name,
-#         "l_name": emp.l_name,
-#         "email": emp.email,
-#         "password": emp.password,
-#         "salary": emp.salary,
-#     }
