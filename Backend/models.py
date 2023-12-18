@@ -20,7 +20,7 @@ class Employee(Base):
 
 class Department(Base):
     __tablename__="Department"
-    id = Column(Integer,primary_key= True, index=True)
+    id = Column(Integer,primary_key= True, index=True,autoincrement=True)
     name = Column(String,unique=True,nullable=False)
 
 

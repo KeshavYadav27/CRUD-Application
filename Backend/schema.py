@@ -32,5 +32,4 @@ class EmployeeLogin(OurBaseModel):
         }
 
 class DepartmentRequest(OurBaseModel):
-    id: int = Field(default=None)
     name: str = Field(default=None)

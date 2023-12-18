@@ -3,11 +3,11 @@ import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 export const setToken = (token) => {
   // set token in localStorage
-  localStorage.setItem("cairocodersToken", token);
+  localStorage.setItem("Token", token);
 };
 export const fetchToken = (token) => {
   // fetch the token
-  return localStorage.getItem("cairocodersToken");
+  return localStorage.getItem("Token");
 };
 export function RequireToken({ children }) {
   let auth = fetchToken();

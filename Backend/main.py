@@ -57,6 +57,15 @@ def signup(emp: EmployeeRequest):
         
 # we dont write models.Employee instead we right Employee because we included models in main.py
 
+@app.post('/add_Department',status_code=status.HTTP_200_OK)
+def add_department(dept:DepartmentRequest):
+    new_dept = Department(
+        name = dept.name
+    )
+    db.add(new_dept)
+    db.commit()
+    return {"message" : "Department added Successfully"}
+
 
 
 
@@ -83,7 +92,7 @@ def login(emp:EmployeeLogin):
 
 
 
-@app.put('/updateemployee/{e_id}', response_model=EmployeeRequest,status_code=status.HTTP_202_ACCEPTED)
+@app.put('/updateemployee/{e_id}',status_code=status.HTTP_202_ACCEPTED)
 def update_employee(e_id: int, emp: EmployeeRequest):
     find_emp = db.query(Employee).filter(Employee.id == e_id).first()
     # filter(emp.id == e_id) in place of emp.id we have to write Employee.id
@@ -97,7 +106,9 @@ def update_employee(e_id: int, emp: EmployeeRequest):
         find_emp.salary = emp.salary
         db.commit()
         db.refresh(find_emp)
-        return find_emp
+        return {
+            "message":"Employee Updated Successfully"
+        }
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee with this id not found")
 
 
