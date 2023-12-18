@@ -22,14 +22,15 @@ export default function Login() {
         })
         .then(function (response) {
           console.log(response);
-          //console.log(response.data);
+          //   console.log(response.data);
           //   alert(response.data["message"]);
           if (response.data["message"] === "Login failed") {
             alert("Login failed");
           } else {
             if (response.data) {
-              setToken(response.data); // Since data has one field
-              navigate("/profile");
+              setToken(response.data); // Since data has one field but now data has 3 fields; // Set the login data to state
+              console.log(response.data);
+              navigate("/profile", { state: { loginData: response.data } }); // Pass data as state
             }
           }
         })

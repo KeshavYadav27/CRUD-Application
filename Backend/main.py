@@ -21,13 +21,17 @@ app.add_middleware(
     allow_credentials=True,
     allow_origins=["http://localhost:3000"])
 
-@app.get('/getemployee/{e_id}',response_model=EmployeeRequest, status_code=status.HTTP_200_OK)
-def get_employee(e_id: int):
-    getEmployee = db.query(Employee).filter(Employee.id == e_id).first()
-    if getEmployee is not None:
-        return getEmployee
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee with this id not found")    
+@app.get('/getemployees',response_model=EmployeeRequest, status_code=status.HTTP_200_OK)
+def get_employees(emp:EmployeeRequest):
+    getEmployee = db.query(Employee).all()
+    return getEmployee    
         
+
+@app.get('/getdepartment',response_model=DepartmentRequest,status_code=status.HTTP_200_OK)
+def get_department(dept:DepartmentRequest):
+    getDepartment = db.query(Department).all()
+    return getDepartment
+
 
 
 @app.post('/signup',status_code = status.HTTP_201_CREATED)
@@ -49,9 +53,11 @@ def signup(emp: EmployeeRequest):
     db.add(newEmployee)
     db.commit()
 
-    return signJWT(newEmployee.email)# we can write newEmployee.email or emp.email because newEmployee has emp values
+    return {"message" : "Signup Successfull"}# we can write newEmployee.email or emp.email because newEmployee has emp values
         
 # we dont write models.Employee instead we right Employee because we included models in main.py
+
+
 
 
 def check_employee(emp:EmployeeLogin):
@@ -60,9 +66,18 @@ def check_employee(emp:EmployeeLogin):
 
 @app.post('/login')
 def login(emp:EmployeeLogin):
-    
-    if(check_employee(emp)):
-        return signJWT(emp.email)
+    employee_data = db.query(Employee).all()
+    department_data = db.query(Department).all()
+    super_employee = db.query(Employee).filter(Employee.email == emp.email).first()
+    if(check_employee(emp) ):
+        if(super_employee.super_user):
+            return {
+            "access_token": signJWT(emp.email),
+            "employee_data": employee_data,
+            "department_data": department_data
+            }
+        else:
+            return {"access_token":signJWT(emp.email)}    
     else:
         return {"message" : "Login failed"}
 
@@ -99,20 +114,29 @@ def deleteEmployee(e_id:int):
     
     return find_emp
     
-@app.post('/add_department', dependencies=[Depends(jwtBearer())], status_code = status.HTTP_201_CREATED)
-def add_dept(dept:DepartmentRequest):
-    newDept = Department(
-        id = dept.id,
-        name = dept.name
-    )
-    db.add(newDept)
+
+@app.delete('/delete_department',dependencies=[Depends(jwtBearer())],status_code=status.HTTP_200_OK)
+def delete_dept(dept:DepartmentRequest):
+    find_dept = db.query(Department).filter(Department.id  == dept.id).first()
+    db.delete(find_dept)
     db.commit()
 
     return {
-        "info": "Department Added"
+        "message":"Department Deleted"
     }
-
 
 
 #in def and app.operation(any:- post,get,put) we have to use same variable which we have used in jinja format
 
+
+
+
+
+# @app.post('/login')
+# def login(emp:EmployeeLogin):
+#     employee = db.query(Employee).all()
+#     department = db.query(Department).all()
+#     if(check_employee(emp)):
+#         return signJWT(emp.email)
+#     else:
+#         return {"message" : "Login failed"}

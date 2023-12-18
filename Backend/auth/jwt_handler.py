@@ -10,7 +10,7 @@ JWT_ALGORITHM = config("algorithm")
 # This functions returns generated Tokens(JWTs)
 def token_response(token:str):
     return {
-        "access token" : token
+        "access_token" : token
     }
 
 # Function used for signing the JWT String
