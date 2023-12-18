@@ -1,4 +1,5 @@
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from auth.jwt_bearer import jwtBearer
@@ -11,7 +12,14 @@ from schema import DepartmentRequest, EmployeeLogin, EmployeeRequest
 
 app = FastAPI()
 
-db = SessionLocal() #All Queries Comes from Here
+db = SessionLocal() #All Queries Comes from Here 
+ 
+app.add_middleware(
+    CORSMiddleware,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
+    allow_origins=["http://localhost:3000"])
 
 @app.get('/getemployee/{e_id}',response_model=EmployeeRequest, status_code=status.HTTP_200_OK)
 def get_employee(e_id: int):
