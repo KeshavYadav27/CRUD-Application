@@ -12,9 +12,7 @@ class OurBaseModel(BaseModel):
 # from_attributes = True indicates that Pydantic should use attribute-style access to data, making it compatible with ORMs that use attribute access.
 
 class EmployeeRequest(OurBaseModel):
-    id: int = Field(default=None)
-    f_name: str = Field(default=None)
-    l_name: str = Field(default=None)
+    name: str = Field(default=None)
     email: EmailStr = Field(default=None)
     password: str = Field(default=None)
     # super_user: bool = False

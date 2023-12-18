@@ -9,9 +9,8 @@ def create_tables():
 # employee table in database
 class Employee(Base):
     __tablename__= "Employee"
-    id = Column(Integer,primary_key= True, index=True)
-    f_name= Column(String(100),nullable=False)
-    l_name= Column(String(100),nullable=False)
+    id = Column(Integer,primary_key= True, index=True,autoincrement=True)
+    name= Column(String(100),nullable=False)
     email = Column(String(250),unique=True,nullable=False)
     password = Column(String(100),nullable=False)
     is_male = Column(Boolean, default= True)

@@ -10,25 +10,25 @@ export default function Login() {
 
   const handleSubmit = () => {
     if (email.length === 0) {
-      alert("Email has left Blank!");
+      alert("Username has left Blank!");
     } else if (password.length === 0) {
-      alert("Password has left Blank!");
+      alert("password has left Blank!");
     } else {
       console.log("axios");
       axios
-        .post("http://127.0.0.1:8000/login", {
+        .post("http://localhost:8000/login", {
           email: email,
           password: password,
         })
         .then(function (response) {
           console.log(response);
           //console.log(response.data);
-          alert(response.data["message"]);
+          //   alert(response.data["message"]);
           if (response.data["message"] === "Login failed") {
             alert("Login failed");
           } else {
-            if (response.data.token) {
-              setToken(response.data.token);
+            if (response.data) {
+              setToken(response.data); // Since data has one field
               navigate("/profile");
             }
           }
@@ -55,7 +55,7 @@ export default function Login() {
                     <div className="form-outline mb-4">
                       <label className="form-label">Your Email ID</label>
                       <input
-                        type="email" // Use type="email" for the email input
+                        type="email"
                         className="form-control form-control-lg"
                         name="email"
                         id="email"

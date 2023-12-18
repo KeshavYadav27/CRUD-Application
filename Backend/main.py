@@ -33,9 +33,7 @@ def get_employee(e_id: int):
 @app.post('/signup',status_code = status.HTTP_201_CREATED)
 def signup(emp: EmployeeRequest):
     newEmployee = Employee(
-        id = emp.id,
-        f_name = emp.f_name,
-        l_name = emp.l_name,
+        name = emp.name,
         email = emp.email,
         password = emp.password,
         is_male = emp.is_male,
@@ -43,7 +41,7 @@ def signup(emp: EmployeeRequest):
         salary = emp.salary
     )
 
-    find_employee = db.query(Employee).filter(Employee.id == emp.id).first()
+    find_employee = db.query(Employee).filter(Employee.email == emp.email).first()
 
     if find_employee != None:
         raise HTTPException(status_code = status.HTTP_406_NOT_ACCEPTABLE, detail = "Employee with this id already exist.")
@@ -66,9 +64,7 @@ def login(emp:EmployeeLogin):
     if(check_employee(emp)):
         return signJWT(emp.email)
     else:
-        return {
-            "error":"Invalid Login Details"
-        }
+        return {"message" : "Login failed"}
 
 
 
@@ -78,8 +74,7 @@ def update_employee(e_id: int, emp: EmployeeRequest):
     # filter(emp.id == e_id) in place of emp.id we have to write Employee.id
     # find_emp.id = emp.id
     if find_emp is not None:
-        find_emp.f_name = emp.f_name
-        find_emp.l_name = emp.l_name
+        find_emp.name = emp.name
         find_emp.email = emp.email
         find_emp.password = emp.password
         find_emp.is_male = emp.is_male
