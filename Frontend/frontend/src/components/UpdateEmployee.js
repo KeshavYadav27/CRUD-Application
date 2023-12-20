@@ -1,16 +1,21 @@
 import axios from "axios";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { fetchToken, setToken } from "./Auth.js";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { setToken } from "./Auth.js";
 
-export default function Signup() {
+const UpdateEmployee = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isMale, setIsMale] = useState(false);
-  const [dName, setDName] = useState("");
-  const [salary, setSalary] = useState("");
+  const { state } = useLocation();
+  const [name, changeName] = useState("");
+  const [email, changeEmail] = useState("");
+  const [password, changePassword] = useState("");
+  const [isMale, changeIsMale] = useState(false);
+  const [dName, changeDName] = useState("");
+  const [salary, changeSalary] = useState("");
+
+  useEffect(() => {
+    console.log(state.id);
+  }, [state]);
 
   const handleSubmit = () => {
     if (name.length === 0) {
@@ -19,9 +24,11 @@ export default function Signup() {
       alert("Email has left Blank!");
     } else if (password.length === 0) {
       alert("Password has left Blank!");
+    } else if (dName.length === 0) {
+      alert("Department Name has left Blank!");
     } else {
       axios
-        .post(`http://localhost:8000/signup`, {
+        .put(`http://localhost:8000/updateemployee/${String(state.id)}`, {
           name: name,
           email: email,
           password: password,
@@ -34,7 +41,8 @@ export default function Signup() {
           alert(response.data["message"]);
           if (response.data.token) {
             setToken(response.data);
-            navigate("/profile");
+            console.log(setToken(response.data));
+            navigate("/profile", { state: { loginData: state.loginData } });
           }
         })
         .catch(function (error) {
@@ -51,43 +59,39 @@ export default function Signup() {
             <div className="col-12 col-md-9 col-lg-7 col-xl-6">
               <div className="card">
                 <div className="card-body p-5">
-                  {fetchToken() ? (
-                    <p>You are logged in!</p>
-                  ) : (
-                    <p>Sign up for an Account!</p>
-                  )}
                   <form>
+                    <p>Update Employee Details</p>
                     <div className="form-outline mb-4">
-                      <label className="form-label">Your Name</label>
+                      <label className="form-label">Name</label>
                       <input
                         type="text"
                         className="form-control form-control-lg"
                         name="name"
                         id="name"
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => changeName(e.target.value)}
                       />
                     </div>
                     <div className="form-outline mb-4">
-                      <label className="form-label">Your Email ID</label>
+                      <label className="form-label">Email ID</label>
                       <input
                         type="email"
                         className="form-control form-control-lg"
                         name="email"
                         id="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => changeEmail(e.target.value)}
                       />
                     </div>
                     <div className="form-outline mb-4">
-                      <label className="form-label">Your Password</label>
+                      <label className="form-label">Password</label>
                       <input
                         type="password"
                         className="form-control form-control-lg"
                         name="password"
                         id="password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => changePassword(e.target.value)}
                       />
                     </div>
                     <div className="form-outline mb-4">
@@ -98,7 +102,7 @@ export default function Signup() {
                         name="dName"
                         id="dName"
                         value={dName}
-                        onChange={(e) => setDName(e.target.value)}
+                        onChange={(e) => changeDName(e.target.value)}
                       />
                     </div>
                     <div className="form-outline mb-4">
@@ -109,7 +113,7 @@ export default function Signup() {
                         name="salary"
                         id="salary"
                         value={salary}
-                        onChange={(e) => setSalary(e.target.value)}
+                        onChange={(e) => changeSalary(e.target.value)}
                       />
                     </div>
                     <div className="form-check mb-4">
@@ -118,7 +122,7 @@ export default function Signup() {
                         className="form-check-input"
                         id="isMale"
                         checked={isMale}
-                        onChange={() => setIsMale(!isMale)}
+                        onChange={() => changeIsMale(!isMale)}
                       />
                       <label className="form-check-label" htmlFor="isMale">
                         Is_Male
@@ -130,7 +134,7 @@ export default function Signup() {
                         className="btn btn-success btn-lg"
                         name="submit"
                         id="submit"
-                        value="Sign Up"
+                        value="Update"
                         onClick={handleSubmit}
                       />
                     </div>
@@ -143,4 +147,6 @@ export default function Signup() {
       </div>
     </div>
   );
-}
+};
+
+export default UpdateEmployee;

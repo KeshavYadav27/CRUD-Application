@@ -21,6 +21,12 @@ app.add_middleware(
     allow_credentials=True,
     allow_origins=["http://localhost:3000"])
 
+@app.get('/', status_code=status.HTTP_200_OK)
+def get_employees():
+    return{
+        "message":"Project"
+    } 
+
 @app.get('/getemployees',response_model=EmployeeRequest, status_code=status.HTTP_200_OK)
 def get_employees(emp:EmployeeRequest):
     getEmployee = db.query(Employee).all()
@@ -56,8 +62,9 @@ def signup(emp: EmployeeRequest):
     return {"message" : "Signup Successfull"}# we can write newEmployee.email or emp.email because newEmployee has emp values
         
 # we dont write models.Employee instead we right Employee because we included models in main.py
+# dependencies=[Depends(jwtBearer())], we can add this so that only person with autorized token can use api
 
-@app.post('/add_Department',status_code=status.HTTP_200_OK)
+@app.post('/addDepartment',status_code=status.HTTP_200_OK)
 def add_department(dept:DepartmentRequest):
     new_dept = Department(
         name = dept.name
@@ -65,9 +72,6 @@ def add_department(dept:DepartmentRequest):
     db.add(new_dept)
     db.commit()
     return {"message" : "Department added Successfully"}
-
-
-
 
 def check_employee(emp:EmployeeLogin):
     checkemp = db.query(Employee).filter(Employee.email == emp.email).first()
@@ -111,9 +115,20 @@ def update_employee(e_id: int, emp: EmployeeRequest):
         }
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee with this id not found")
 
+@app.put('/updatedepartment/{d_id}',status_code=status.HTTP_202_ACCEPTED)
+def update_department(d_id:int , dept:DepartmentRequest):
+    find_dept = db.query(Department).filter(Department.id == d_id).first()
+    if find_dept is not None:
+        find_dept.name = dept.name
+        db.commit()
+        db.refresh(find_dept)
+        return{
+            "message":"Department Updated Successfully"
+        }
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Department with this id not found")
 
 
-@app.delete('/deleteemployee/{e_id}', response_model = EmployeeRequest, status_code=status.HTTP_200_OK)
+@app.delete('/deleteemployee/{e_id}', status_code=status.HTTP_200_OK)
 def deleteEmployee(e_id:int):
     find_emp = db.query(Employee).filter(Employee.id == e_id).first()
 
@@ -123,12 +138,14 @@ def deleteEmployee(e_id:int):
     db.delete(find_emp)
     db.commit()
     
-    return find_emp
+    return {
+        "message":"Employee Deleted"
+    }
     
 
-@app.delete('/delete_department',dependencies=[Depends(jwtBearer())],status_code=status.HTTP_200_OK)
-def delete_dept(dept:DepartmentRequest):
-    find_dept = db.query(Department).filter(Department.id  == dept.id).first()
+@app.delete('/deletedepartment/{d_id}',status_code=status.HTTP_200_OK)
+def delete_dept(d_id:int):
+    find_dept = db.query(Department).filter(Department.id  == d_id).first()
     db.delete(find_dept)
     db.commit()
 

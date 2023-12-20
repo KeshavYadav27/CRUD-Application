@@ -8,6 +8,8 @@ const EmployeeRow = ({
   is_male,
   d_name,
   salary,
+  handleUpdateEmployee,
+  handleDeleteEmployee,
 }) => {
   return (
     <tr>
@@ -19,10 +21,18 @@ const EmployeeRow = ({
       <td>{d_name}</td>
       <td>{salary}</td>
       <td>
-        <button className="btn btn-outline-info btn-sm ml-1 mr-2">
+        <button
+          onClick={() => handleUpdateEmployee(id)}
+          className="btn btn-outline-info btn-sm ml-1 mr-2"
+        >
           Update
         </button>
-        <button className="btn btn-outline-danger btn-sm mr-2">Delete</button>
+        <button
+          onClick={() => handleDeleteEmployee(id)}
+          className="btn btn-outline-danger btn-sm mr-2"
+        >
+          Delete
+        </button>
       </td>
     </tr>
   );

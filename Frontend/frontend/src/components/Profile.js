@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useEffect } from "react";
 import { Table } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,9 +16,56 @@ export default function Profile() {
     localStorage.removeItem("Token");
     navigate("/");
   };
+  const handleAddDepartment = () => {
+    console.log("Add Department");
+    navigate(`/adddepartment`, { state });
+  };
+
+  const handleDeleteEmployee = (id) => {
+    axios
+      .delete(`http://localhost:8000/deleteemployee/${String(id)}`)
+      .then(function (response) {
+        console.log(response);
+        alert(response.data["message"]);
+        if (response.data.token) {
+          navigate("/profile", { state: { loginData: state.loginData } });
+        }
+      })
+      .catch(function (error) {
+        console.log(error, "error");
+      });
+  };
+
+  const handleDeleteDepartment = (id) => {
+    axios
+      .delete(`http://localhost:8000/deletedepartment/${String(id)}`)
+      .then(function (response) {
+        console.log(response);
+        alert(response.data["message"]);
+        if (response.data.token) {
+          navigate("/profile", { state: { loginData: state.loginData } });
+        }
+      })
+      .catch(function (error) {
+        console.log(error, "error");
+      });
+  };
+
+  const handleUpdateEmployee = (id) => {
+    console.log("Update Employee", id);
+    navigate(`/updateemployee`, {
+      state: { loginData: state.loginData, id: id },
+    });
+  };
+
+  const handleUpdateDepartment = (id) => {
+    console.log("Update Department", id);
+    navigate(`/updatedepartment`, {
+      state: { loginData: state.loginData, id: id },
+    });
+  };
 
   const numberOfFields = Object.keys(state?.loginData).length;
-  console.log(state.loginData.employee_data["0"]);
 
   return (
     <>
@@ -51,19 +99,25 @@ export default function Profile() {
 
                         for (let i = 0; i < employeeData.length; i++) {
                           const employee = employeeData[i];
-
-                          rows.push(
-                            <EmployeeRow
-                              key={employee.id}
-                              id={employee.id}
-                              name={employee.name}
-                              email={employee.email}
-                              password={employee.password}
-                              is_male={employee.is_male}
-                              d_name={employee.d_name}
-                              salary={employee.salary}
-                            />
-                          );
+                          if (!employeeData[i]["super_user"]) {
+                            rows.push(
+                              <EmployeeRow
+                                id={employee.id}
+                                name={employee.name}
+                                email={employee.email}
+                                password={employee.password}
+                                is_male={employee.is_male}
+                                d_name={employee.d_name}
+                                salary={employee.salary}
+                                handleUpdateEmployee={() =>
+                                  handleUpdateEmployee(employee.id)
+                                }
+                                handleDeleteEmployee={() =>
+                                  handleDeleteEmployee(employee.id)
+                                }
+                              />
+                            );
+                          }
                         }
 
                         return rows;
@@ -75,6 +129,13 @@ export default function Profile() {
             </div>
 
             <h2>Department Table</h2>
+            <h7>From here we can add department</h7>
+            <button
+              onClick={() => handleAddDepartment()}
+              className="btn btn-outline-success btn-sm mr-2"
+            >
+              Add Department
+            </button>
             <div className="row">
               <div className="col-sm-10 col-xm-12 mr-auto ml-auto mt-4 mb-4">
                 <div>
@@ -95,7 +156,16 @@ export default function Profile() {
                           const dept = departmentData[i];
 
                           rows.push(
-                            <DepartmentRow id={dept.id} name={dept.name} />
+                            <DepartmentRow
+                              id={dept.id}
+                              name={dept.name}
+                              handleUpdateDepartment={() =>
+                                handleUpdateDepartment(dept.id)
+                              }
+                              handleDeleteDepartment={() =>
+                                handleDeleteDepartment(dept.id)
+                              }
+                            />
                           );
                         }
 
