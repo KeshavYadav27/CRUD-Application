@@ -27,14 +27,14 @@ def get_employees():
         "message":"Project"
     } 
 
-@app.get('/getemployees',response_model=EmployeeRequest, status_code=status.HTTP_200_OK)
-def get_employees(emp:EmployeeRequest):
+@app.get('/employee',status_code=status.HTTP_200_OK)
+def get_employees():
     getEmployee = db.query(Employee).all()
     return getEmployee    
         
 
-@app.get('/getdepartment',response_model=DepartmentRequest,status_code=status.HTTP_200_OK)
-def get_department(dept:DepartmentRequest):
+@app.get('/department',status_code=status.HTTP_200_OK)
+def get_department():
     getDepartment = db.query(Department).all()
     return getDepartment
 
@@ -64,7 +64,7 @@ def signup(emp: EmployeeRequest):
 # we dont write models.Employee instead we right Employee because we included models in main.py
 # dependencies=[Depends(jwtBearer())], we can add this so that only person with autorized token can use api
 
-@app.post('/addDepartment',status_code=status.HTTP_200_OK)
+@app.post('/department',status_code=status.HTTP_200_OK)
 def add_department(dept:DepartmentRequest):
     new_dept = Department(
         name = dept.name
@@ -74,29 +74,23 @@ def add_department(dept:DepartmentRequest):
     return {"message" : "Department added Successfully"}
 
 def check_employee(emp:EmployeeLogin):
-    checkemp = db.query(Employee).filter(Employee.email == emp.email).first()
+    checkemp = db.query(Employee).filter((Employee.email == emp.email) & (Employee.password == emp.password)).first()
     return checkemp is not None
 
 @app.post('/login')
 def login(emp:EmployeeLogin):
-    employee_data = db.query(Employee).all()
-    department_data = db.query(Department).all()
     super_employee = db.query(Employee).filter(Employee.email == emp.email).first()
     if(check_employee(emp) ):
-        if(super_employee.super_user):
-            return {
+        return {
             "access_token": signJWT(emp.email),
-            "employee_data": employee_data,
-            "department_data": department_data
-            }
-        else:
-            return {"access_token":signJWT(emp.email)}    
+            "super_user": super_employee.super_user,
+            }   
     else:
         return {"message" : "Login failed"}
 
 
 
-@app.put('/updateemployee/{e_id}',status_code=status.HTTP_202_ACCEPTED)
+@app.put('/employee/{e_id}',status_code=status.HTTP_202_ACCEPTED)
 def update_employee(e_id: int, emp: EmployeeRequest):
     find_emp = db.query(Employee).filter(Employee.id == e_id).first()
     # filter(emp.id == e_id) in place of emp.id we have to write Employee.id
@@ -115,7 +109,7 @@ def update_employee(e_id: int, emp: EmployeeRequest):
         }
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee with this id not found")
 
-@app.put('/updatedepartment/{d_id}',status_code=status.HTTP_202_ACCEPTED)
+@app.put('/department/{d_id}',status_code=status.HTTP_202_ACCEPTED)
 def update_department(d_id:int , dept:DepartmentRequest):
     find_dept = db.query(Department).filter(Department.id == d_id).first()
     if find_dept is not None:
@@ -128,7 +122,7 @@ def update_department(d_id:int , dept:DepartmentRequest):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Department with this id not found")
 
 
-@app.delete('/deleteemployee/{e_id}', status_code=status.HTTP_200_OK)
+@app.delete('/employee/{e_id}', status_code=status.HTTP_200_OK)
 def deleteEmployee(e_id:int):
     find_emp = db.query(Employee).filter(Employee.id == e_id).first()
 
@@ -143,7 +137,7 @@ def deleteEmployee(e_id:int):
     }
     
 
-@app.delete('/deletedepartment/{d_id}',status_code=status.HTTP_200_OK)
+@app.delete('/department/{d_id}',status_code=status.HTTP_200_OK)
 def delete_dept(d_id:int):
     find_dept = db.query(Department).filter(Department.id  == d_id).first()
     db.delete(find_dept)

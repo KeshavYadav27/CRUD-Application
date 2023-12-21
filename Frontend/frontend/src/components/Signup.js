@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchToken, setToken } from "./Auth.js";
+import { fetchToken } from "./Auth.js";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -30,10 +30,8 @@ export default function Signup() {
           salary: salary,
         })
         .then(function (response) {
-          console.log(response);
           alert(response.data["message"]);
-          if (response.data.token) {
-            setToken(response.data);
+          if (response.data["message"]) {
             navigate("/profile");
           }
         })

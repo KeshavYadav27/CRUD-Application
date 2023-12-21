@@ -3,13 +3,13 @@ import "./App.css";
 
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 
+import AddDepartment from "./components/AddDepartment.js";
 import { RequireToken } from "./components/Auth.js";
 import Login from "./components/Login.js";
 import Profile from "./components/Profile.js";
 import Signup from "./components/Signup.js";
 import UpdateDepartment from "./components/UpdateDepartment.js";
 import UpdateEmployee from "./components/UpdateEmployee.js";
-import AddDepartment from "./components/AddDepartment.js"
 
 function App() {
   return (

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import DepartmentRow from "./DepartmentRow";
@@ -8,9 +8,30 @@ import EmployeeRow from "./EmployeeRow";
 export default function Profile() {
   const navigate = useNavigate();
   const { state } = useLocation();
+  const [empData, setEmpData] = useState([]);
+  const [deptData, setDeptData] = useState([]);
+
   useEffect(() => {
-    console.log(state);
+    const fetchData = async () => {
+      try {
+        const emplist = await axios.get("http://localhost:8000/employee");
+        const deptlist = await axios.get("http://localhost:8000/department");
+
+        setEmpData(emplist.data);
+        setDeptData(deptlist.data);
+
+        console.log(state, emplist.data, deptlist.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
   }, [state]);
+
+  // useEffect(() => {
+  //   console.log(state);
+  // }, [state]);
 
   const signOut = () => {
     localStorage.removeItem("Token");
@@ -23,7 +44,7 @@ export default function Profile() {
 
   const handleDeleteEmployee = (id) => {
     axios
-      .delete(`http://localhost:8000/deleteemployee/${String(id)}`)
+      .delete(`http://localhost:8000/employee/${String(id)}`)
       .then(function (response) {
         console.log(response);
         alert(response.data["message"]);
@@ -38,7 +59,7 @@ export default function Profile() {
 
   const handleDeleteDepartment = (id) => {
     axios
-      .delete(`http://localhost:8000/deletedepartment/${String(id)}`)
+      .delete(`http://localhost:8000/department/${String(id)}`)
       .then(function (response) {
         console.log(response);
         alert(response.data["message"]);
@@ -65,15 +86,13 @@ export default function Profile() {
     });
   };
 
-  const numberOfFields = Object.keys(state?.loginData).length;
-
   return (
     <>
       <div style={{ minHeight: 800, marginTop: 20 }}>
         <h1>Profile Page</h1>
         <p>Hi, this is your profile</p>
 
-        {numberOfFields >= 3 && (
+        {state.loginData.super_user && (
           <>
             <h2>Employee Table</h2>
             <div className="row">
@@ -95,7 +114,7 @@ export default function Profile() {
                     <tbody>
                       {(() => {
                         const rows = [];
-                        const employeeData = state.loginData.employee_data;
+                        const employeeData = empData;
 
                         for (let i = 0; i < employeeData.length; i++) {
                           const employee = employeeData[i];
@@ -150,7 +169,7 @@ export default function Profile() {
                     <tbody>
                       {(() => {
                         const rows = [];
-                        const departmentData = state.loginData.department_data;
+                        const departmentData = deptData;
 
                         for (let i = 0; i < departmentData.length; i++) {
                           const dept = departmentData[i];

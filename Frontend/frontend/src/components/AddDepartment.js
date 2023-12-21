@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { setToken } from "./Auth.js";
 
 const AddDepartment = () => {
   const navigate = useNavigate();
@@ -17,15 +16,13 @@ const AddDepartment = () => {
       alert("Name has left Blank!");
     } else {
       axios
-        .post(`http://localhost:8000/addDepartment`, {
+        .post(`http://localhost:8000/department`, {
           name: name,
         })
         .then(function (response) {
           console.log(response);
           alert(response.data["message"]);
-          if (response.data.token) {
-            setToken(response.data);
-            console.log(setToken(response.data));
+          if (response.data["message"]) {
             navigate("/profile", { state: { loginData: state.loginData } });
           }
         })

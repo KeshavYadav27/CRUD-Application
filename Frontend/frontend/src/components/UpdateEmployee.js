@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { setToken } from "./Auth.js";
 
 const UpdateEmployee = () => {
   const navigate = useNavigate();
@@ -14,7 +13,7 @@ const UpdateEmployee = () => {
   const [salary, changeSalary] = useState("");
 
   useEffect(() => {
-    console.log(state.id);
+    console.log(state);
   }, [state]);
 
   const handleSubmit = () => {
@@ -28,7 +27,7 @@ const UpdateEmployee = () => {
       alert("Department Name has left Blank!");
     } else {
       axios
-        .put(`http://localhost:8000/updateemployee/${String(state.id)}`, {
+        .put(`http://localhost:8000/employee/${String(state.id)}`, {
           name: name,
           email: email,
           password: password,
@@ -39,9 +38,7 @@ const UpdateEmployee = () => {
         .then(function (response) {
           console.log(response);
           alert(response.data["message"]);
-          if (response.data.token) {
-            setToken(response.data);
-            console.log(setToken(response.data));
+          if (response.data["message"]) {
             navigate("/profile", { state: { loginData: state.loginData } });
           }
         })
