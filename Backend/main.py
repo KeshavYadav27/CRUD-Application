@@ -21,19 +21,14 @@ app.add_middleware(
     allow_credentials=True,
     allow_origins=["http://localhost:3000"])
 
-@app.get('/', status_code=status.HTTP_200_OK)
-def get_employees():
-    return{
-        "message":"Project"
-    } 
 
-@app.get('/employee',status_code=status.HTTP_200_OK)
+@app.get('/employee',dependencies=[Depends(jwtBearer())],status_code=status.HTTP_200_OK)
 def get_employees():
     getEmployee = db.query(Employee).all()
     return getEmployee    
         
 
-@app.get('/department',status_code=status.HTTP_200_OK)
+@app.get('/department',dependencies=[Depends(jwtBearer())],status_code=status.HTTP_200_OK)
 def get_department():
     getDepartment = db.query(Department).all()
     return getDepartment
@@ -64,7 +59,7 @@ def signup(emp: EmployeeRequest):
 # we dont write models.Employee instead we right Employee because we included models in main.py
 # dependencies=[Depends(jwtBearer())], we can add this so that only person with autorized token can use api
 
-@app.post('/department',status_code=status.HTTP_200_OK)
+@app.post('/department',dependencies=[Depends(jwtBearer())],status_code=status.HTTP_200_OK)
 def add_department(dept:DepartmentRequest):
     new_dept = Department(
         name = dept.name
@@ -90,7 +85,7 @@ def login(emp:EmployeeLogin):
 
 
 
-@app.put('/employee/{e_id}',status_code=status.HTTP_202_ACCEPTED)
+@app.put('/employee/{e_id}',dependencies=[Depends(jwtBearer())],status_code=status.HTTP_202_ACCEPTED)
 def update_employee(e_id: int, emp: EmployeeRequest):
     find_emp = db.query(Employee).filter(Employee.id == e_id).first()
     # filter(emp.id == e_id) in place of emp.id we have to write Employee.id
@@ -109,7 +104,7 @@ def update_employee(e_id: int, emp: EmployeeRequest):
         }
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee with this id not found")
 
-@app.put('/department/{d_id}',status_code=status.HTTP_202_ACCEPTED)
+@app.put('/department/{d_id}',dependencies=[Depends(jwtBearer())],status_code=status.HTTP_202_ACCEPTED)
 def update_department(d_id:int , dept:DepartmentRequest):
     find_dept = db.query(Department).filter(Department.id == d_id).first()
     if find_dept is not None:
@@ -122,7 +117,7 @@ def update_department(d_id:int , dept:DepartmentRequest):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Department with this id not found")
 
 
-@app.delete('/employee/{e_id}', status_code=status.HTTP_200_OK)
+@app.delete('/employee/{e_id}', dependencies=[Depends(jwtBearer())],status_code=status.HTTP_200_OK)
 def deleteEmployee(e_id:int):
     find_emp = db.query(Employee).filter(Employee.id == e_id).first()
 
@@ -137,7 +132,7 @@ def deleteEmployee(e_id:int):
     }
     
 
-@app.delete('/department/{d_id}',status_code=status.HTTP_200_OK)
+@app.delete('/department/{d_id}',dependencies=[Depends(jwtBearer())],status_code=status.HTTP_200_OK)
 def delete_dept(d_id:int):
     find_dept = db.query(Department).filter(Department.id  == d_id).first()
     db.delete(find_dept)
@@ -149,16 +144,3 @@ def delete_dept(d_id:int):
 
 
 #in def and app.operation(any:- post,get,put) we have to use same variable which we have used in jinja format
-
-
-
-
-
-# @app.post('/login')
-# def login(emp:EmployeeLogin):
-#     employee = db.query(Employee).all()
-#     department = db.query(Department).all()
-#     if(check_employee(emp)):
-#         return signJWT(emp.email)
-#     else:
-#         return {"message" : "Login failed"}

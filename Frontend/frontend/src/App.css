@@ -37,13 +37,27 @@
   }
 }
 
-.card {
-  border-radius: 15px;
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
+
+body {
+  /* No overflow: hidden; */
+}
+
 .gradient-custom {
   background: linear-gradient(
     to bottom right,
     rgba(240, 147, 251, 1),
     rgba(245, 87, 108, 1)
   );
+  height: 100vh; /* Set to full viewport height */
+}
+
+.card {
+  border-radius: 15px;
+  /* Additional styling for your card */
 }

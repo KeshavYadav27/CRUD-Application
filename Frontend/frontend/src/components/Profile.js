@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
+import { fetchToken } from "./Auth";
 import DepartmentRow from "./DepartmentRow";
 import EmployeeRow from "./EmployeeRow";
 
@@ -10,12 +11,22 @@ export default function Profile() {
   const { state } = useLocation();
   const [empData, setEmpData] = useState([]);
   const [deptData, setDeptData] = useState([]);
+  const token = fetchToken();
+  console.log(token);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const emplist = await axios.get("http://localhost:8000/employee");
-        const deptlist = await axios.get("http://localhost:8000/department");
+        const emplist = await axios.get("http://localhost:8000/employee", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the headers
+          },
+        });
+        const deptlist = await axios.get("http://localhost:8000/department", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the headers
+          },
+        });
 
         setEmpData(emplist.data);
         setDeptData(deptlist.data);
@@ -27,7 +38,7 @@ export default function Profile() {
     };
 
     fetchData();
-  }, [state]);
+  }, [state, token]);
 
   // useEffect(() => {
   //   console.log(state);
@@ -44,11 +55,15 @@ export default function Profile() {
 
   const handleDeleteEmployee = (id) => {
     axios
-      .delete(`http://localhost:8000/employee/${String(id)}`)
+      .delete(`http://localhost:8000/employee/${String(id)}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the headers
+        },
+      })
       .then(function (response) {
         console.log(response);
         alert(response.data["message"]);
-        if (response.data.token) {
+        if (response.data["message"]) {
           navigate("/profile", { state: { loginData: state.loginData } });
         }
       })
@@ -59,11 +74,15 @@ export default function Profile() {
 
   const handleDeleteDepartment = (id) => {
     axios
-      .delete(`http://localhost:8000/department/${String(id)}`)
+      .delete(`http://localhost:8000/department/${String(id)}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the headers
+        },
+      })
       .then(function (response) {
         console.log(response);
         alert(response.data["message"]);
-        if (response.data.token) {
+        if (response.data["message"]) {
           navigate("/profile", { state: { loginData: state.loginData } });
         }
       })

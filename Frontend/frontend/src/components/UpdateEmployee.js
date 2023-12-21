@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { fetchToken } from "./Auth";
 
 const UpdateEmployee = () => {
   const navigate = useNavigate();
@@ -11,6 +12,8 @@ const UpdateEmployee = () => {
   const [isMale, changeIsMale] = useState(false);
   const [dName, changeDName] = useState("");
   const [salary, changeSalary] = useState("");
+  const token = fetchToken();
+  console.log(token);
 
   useEffect(() => {
     console.log(state);
@@ -27,14 +30,22 @@ const UpdateEmployee = () => {
       alert("Department Name has left Blank!");
     } else {
       axios
-        .put(`http://localhost:8000/employee/${String(state.id)}`, {
-          name: name,
-          email: email,
-          password: password,
-          is_male: isMale,
-          d_name: dName,
-          salary: salary,
-        })
+        .put(
+          `http://localhost:8000/employee/${String(state.id)}`,
+          {
+            name: name,
+            email: email,
+            password: password,
+            is_male: isMale,
+            d_name: dName,
+            salary: salary,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Include the token in the headers
+            },
+          }
+        )
         .then(function (response) {
           console.log(response);
           alert(response.data["message"]);

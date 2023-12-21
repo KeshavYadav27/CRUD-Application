@@ -1,12 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { fetchToken } from "./Auth";
 
 const AddDepartment = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const [name, changeName] = useState("");
-
+  const token = fetchToken();
+  console.log(token);
   useEffect(() => {
     console.log(state);
   }, [state]);
@@ -16,9 +18,17 @@ const AddDepartment = () => {
       alert("Name has left Blank!");
     } else {
       axios
-        .post(`http://localhost:8000/department`, {
-          name: name,
-        })
+        .post(
+          `http://localhost:8000/department`,
+          {
+            name: name,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
         .then(function (response) {
           console.log(response);
           alert(response.data["message"]);
