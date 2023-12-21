@@ -68,7 +68,7 @@ const UpdateDepartment = () => {
                     <div className="d-flex justify-content-center">
                       <input
                         type="button"
-                        className="btn btn-success btn-lg"
+                        className="btn btn-primary"
                         name="submit"
                         id="submit"
                         value="Update"

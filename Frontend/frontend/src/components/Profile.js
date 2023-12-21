@@ -109,7 +109,8 @@ export default function Profile() {
     <>
       <div style={{ minHeight: 800, marginTop: 20 }}>
         <h1>Profile Page</h1>
-        <p>Hi, this is your profile</p>
+
+        <p>Hi, this is your profile.</p>
 
         {state.loginData.super_user && (
           <>
@@ -218,11 +219,7 @@ export default function Profile() {
         )}
 
         <div>
-          <button
-            type="button"
-            className="btn btn-success btn-lg"
-            onClick={signOut}
-          >
+          <button type="button" className="btn btn-primary" onClick={signOut}>
             Sign Out
           </button>
         </div>

@@ -12,6 +12,9 @@ from schema import DepartmentRequest, EmployeeLogin, EmployeeRequest
 
 app = FastAPI()
 
+# Mock Database
+mockdb={}
+
 db = SessionLocal() #All Queries Comes from Here 
  
 app.add_middleware(
@@ -120,9 +123,6 @@ def update_department(d_id:int , dept:DepartmentRequest):
 @app.delete('/employee/{e_id}', dependencies=[Depends(jwtBearer())],status_code=status.HTTP_200_OK)
 def deleteEmployee(e_id:int):
     find_emp = db.query(Employee).filter(Employee.id == e_id).first()
-
-    if find_emp is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee with this id is either deleted or not found")
 
     db.delete(find_emp)
     db.commit()

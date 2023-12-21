@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchToken } from "./Auth.js";
 
 export default function Signup() {
@@ -43,6 +43,16 @@ export default function Signup() {
 
   return (
     <div>
+      <p>
+        <Link to="/" className="btn btn-primary">
+          Login
+        </Link>{" "}
+        |{" "}
+        <Link to="/Signup" className="btn btn-primary">
+          Signup
+        </Link>
+        {""}
+      </p>
       <div className="mask d-flex align-items-center h-100 gradient-custom-3">
         <div className="container h-100">
           <div className="row d-flex justify-content-center align-items-center h-100">
@@ -125,7 +135,7 @@ export default function Signup() {
                     <div className="d-flex justify-content-center">
                       <input
                         type="button"
-                        className="btn btn-success btn-lg"
+                        className="btn btn-primary"
                         name="submit"
                         id="submit"
                         value="Sign Up"

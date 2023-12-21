@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 
-import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import AddDepartment from "./components/AddDepartment.js";
 import { RequireToken } from "./components/Auth.js";
@@ -18,17 +18,6 @@ function App() {
         <h1 className="page-header text-center">Management App</h1>
 
         <BrowserRouter>
-          <p>
-            <Link to="/" className="btn btn-success">
-              Login
-            </Link>{" "}
-            |{" "}
-            <Link to="/Signup" className="btn btn-success">
-              Signup
-            </Link>
-            {""}
-          </p>
-
           <Routes>
             <Route path="/Signup" element={<Signup />} />
             <Route path="/" element={<Login />} />

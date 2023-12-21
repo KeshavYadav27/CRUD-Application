@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchToken, setToken } from "./Auth.js";
 
 export default function Login() {
@@ -10,7 +10,7 @@ export default function Login() {
 
   const handleSubmit = () => {
     if (email.length === 0) {
-      alert("Username has left Blank!");
+      alert("email has left Blank!");
     } else if (password.length === 0) {
       alert("password has left Blank!");
     } else {
@@ -41,6 +41,19 @@ export default function Login() {
   };
   return (
     <div>
+      <p>
+        <Link to="/" className="btn btn-primary">
+          Login
+        </Link>{" "}
+        |{" "}
+        <Link
+          to="/Signup"
+          className="btn btn-primary"
+        >
+          Signup
+        </Link>
+        {""}
+      </p>
       <div className="mask d-flex align-items-center h-100 gradient-custom-3">
         <div className="container h-100">
           <div className="row d-flex justify-content-center align-items-center h-100">
@@ -80,10 +93,11 @@ export default function Login() {
                     <div className="d-flex justify-content-center">
                       <input
                         type="button"
-                        className="btn btn-success btn-lg"
+                        className="btn btn-primary"
                         name="submit"
                         id="submit"
                         value="Login"
+                        // style={{ backgroundColor: "#ec53b0" }}
                         onClick={handleSubmit}
                       />
                     </div>
