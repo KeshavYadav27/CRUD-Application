@@ -1,19 +1,15 @@
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-
 from auth.jwt_bearer import jwtBearer
 from auth.jwt_handler import signJWT
+from data_models import DepartmentRequest, EmployeeLogin, EmployeeRequest
 from database import SessionLocal
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from models import Department, Employee
-from schema import DepartmentRequest, EmployeeLogin, EmployeeRequest
+from pydantic import BaseModel
 
 # from models import Employee  # Assuming you have a models.py file with the Employee model
 
 app = FastAPI()
-
-# Mock Database
-mockdb={}
 
 db = SessionLocal() #All Queries Comes from Here 
  
@@ -72,8 +68,10 @@ def add_department(dept:DepartmentRequest):
     return {"message" : "Department added Successfully"}
 
 def check_employee(emp:EmployeeLogin):
-    checkemp = db.query(Employee).filter((Employee.email == emp.email) & (Employee.password == emp.password)).first()
-    return checkemp is not None
+    empid = db.query(Employee).filter(Employee.email == emp.email).first()
+    checkempemail = db.query(Employee).filter(Employee.email == emp.email).first()
+    checkemppassword = db.query(Employee).filter((Employee.id == checkempemail.id)&(Employee.password == emp.password)).first()
+    return checkempemail is not None and checkemppassword is not None
 
 @app.post('/login')
 def login(emp:EmployeeLogin):

@@ -26,7 +26,7 @@ const UpdateDepartment = () => {
           },
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Include the token in the headers
+              Authorization: `Bearer ${token}`, // I included the token in the headers for authentication
             },
           }
         )
