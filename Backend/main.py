@@ -68,10 +68,8 @@ def add_department(dept:DepartmentRequest):
     return {"message" : "Department added Successfully"}
 
 def check_employee(emp:EmployeeLogin):
-    empid = db.query(Employee).filter(Employee.email == emp.email).first()
-    checkempemail = db.query(Employee).filter(Employee.email == emp.email).first()
-    checkemppassword = db.query(Employee).filter((Employee.id == checkempemail.id)&(Employee.password == emp.password)).first()
-    return checkempemail is not None and checkemppassword is not None
+    employee = db.query(Employee).filter(Employee.email == emp.email).first()
+    return employee and employee.password == emp.password
 
 @app.post('/login')
 def login(emp:EmployeeLogin):
