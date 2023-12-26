@@ -30,6 +30,7 @@ export default function Signup() {
           salary: salary,
         })
         .then(function (response) {
+          // console.log(response.data);
           alert(response.data["message"]);
           if (response.data["message"]) {
             navigate("/profile");
@@ -110,7 +111,7 @@ export default function Signup() {
                       />
                     </div>
                     <div className="form-outline mb-4">
-                      <label className="form-label">Salary</label>
+                      <label className="form-label">Salary (per month)</label>
                       <input
                         type="text"
                         className="form-control form-control-lg"
